@@ -35,7 +35,7 @@ vnets = {
       "public" = {
         name = "public-nsg"
       }
-      "cngfw" = {
+      "ngfw" = {
         name = "ngfw-nsg"
         rules = {
               ngfw-vnet-inbound = {
@@ -114,8 +114,8 @@ vnets = {
           }
         }
       }
-      "cngfw-app-gw" = {
-        name = "cngfw-app-gw-rt"
+      "ngfw-app-gw" = {
+        name = "ngfw-app-gw-rt"
         routes = {
           "spoke1" = {
             name           = "spoke1-udr"
