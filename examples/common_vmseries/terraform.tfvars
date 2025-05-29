@@ -1,9 +1,8 @@
 # GENERAL
 
-#region              = "East US 2"
-region              = "Canada Central"
-resource_group_name = "transit-vnet-common"
-name_prefix         = "jwick-"
+region              = "East US"
+resource_group_name = "transit-vnet"
+name_prefix         = "gstan-"
 tags = {
   "CreatedBy"     = "Palo Alto Networks"
   "CreatedWith"   = "Terraform"
@@ -37,10 +36,10 @@ vnets = {
         name = "public-nsg"
       }
       "cngfw" = {
-        name = "cngfw-nsg"
+        name = "ngfw-nsg"
         rules = {
-              cngfw-vnet-inbound = {
-                name                       = "cngfw-allow-all"
+              ngfw-vnet-inbound = {
+                name                       = "ngfw-allow-all"
                 priority                   = 100
                 direction                  = "Inbound"
                 access                     = "Allow"
@@ -158,13 +157,13 @@ vnets = {
         route_table_key  = "cngfw-app-gw"
       }
       "cngfw-public" = {
-        name             = "cngfw-public-snet"
-        network_security_group_key = "cngfw"
+        name             = "ngfw-public-snet"
+        network_security_group_key = "ngfw"
         address_prefixes = ["10.0.1.0/24"]
       }
       "cngfw-private" = {
-        name             = "cngfw-private-snet"
-        network_security_group_key = "cngfw"
+        name             = "ngfw-private-snet"
+        network_security_group_key = "ngfw"
         address_prefixes = ["10.0.2.0/24"]
       }
     }
@@ -293,25 +292,25 @@ vmseries_universal = {
 }
 
 vmseries = {
-  "fw-1" = {
-    name     = "firewall01"
+  "ngfw01" = {
+    name     = "ngfw01"
     vnet_key = "transit"
     virtual_machine = {
       zone = 1
     }
     interfaces = [
       {
-        name             = "vm01-mgmt"
+        name             = "ngfw01-mgmt"
         subnet_key       = "management"
         create_public_ip = true
       },
       {
-        name              = "vm01-private"
+        name              = "ngfw01-private"
         subnet_key        = "private"
         load_balancer_key = "private"
       },
       {
-        name                    = "vm01-public"
+        name                    = "ngfw01-public"
         subnet_key              = "public"
         create_public_ip        = true
         load_balancer_key       = "public"
@@ -319,25 +318,25 @@ vmseries = {
       }
     ]
   }
-  "fw-2" = {
-    name     = "firewall02"
+  "ngfw02" = {
+    name     = "ngfw02"
     vnet_key = "transit"
     virtual_machine = {
       zone = 1
     }
     interfaces = [
       {
-        name             = "vm02-mgmt"
+        name             = "ngfw02-mgmt"
         subnet_key       = "management"
         create_public_ip = true
       },
       {
-        name              = "vm02-private"
+        name              = "ngfw02-private"
         subnet_key        = "private"
         load_balancer_key = "private"
       },
       {
-        name                    = "vm02-public"
+        name                    = "ngfw02-public"
         subnet_key              = "public"
         create_public_ip        = true
         load_balancer_key       = "public"
