@@ -1,12 +1,13 @@
 # GENERAL
 
 region              = "East US"
-resource_group_name = "transit-vnet"
+resource_group_name = "transit"
 name_prefix         = "gstan-"
 tags = {
   "CreatedBy"     = "Palo Alto Networks"
   "CreatedWith"   = "Terraform"
   "xdr-exclusion" = "yes"
+  "Owner"  = "gstan"
 }
 
 # NETWORK
@@ -20,7 +21,7 @@ vnets = {
         name = "mgmt-nsg"
         rules = {
           mgmt_inbound = {
-            name                       = "vmseries-management-allow-inbound"
+            name                       = "ngfw-allow-inbound"
             priority                   = 100
             direction                  = "Inbound"
             access                     = "Allow"
@@ -154,14 +155,14 @@ vnets = {
       "appgw" = {
         name             = "appgw-snet"
         address_prefixes = ["10.0.0.48/28"]
-        route_table_key  = "cngfw-app-gw"
+        route_table_key  = "ngfw-app-gw"
       }
-      "cngfw-public" = {
+      "ngfw-public" = {
         name             = "ngfw-public-snet"
         network_security_group_key = "ngfw"
         address_prefixes = ["10.0.1.0/24"]
       }
-      "cngfw-private" = {
+      "ngfw-private" = {
         name             = "ngfw-private-snet"
         network_security_group_key = "ngfw"
         address_prefixes = ["10.0.2.0/24"]
@@ -284,9 +285,12 @@ appgws = {
 }
 
 # VM-SERIES
+
 vmseries_universal = {
-  version           = "latest"
+  version           = "11.2.600"
   size              = "Standard_D3_v2"
+  #bootstrap_options = #"panorama-server=172.210.8.228;authcodes=D9273329;vm-auth-key=388104403362258;type=dhcp-client;dhcp-accept-server-hostname=yes;dns-primary=8.8.8.8;dns-secondary=4.2.2.2;tplname=ngfw-stack;dgname=Azure"
+  
   bootstrap_options = <<-EOT
     panorama-server=172.210.8.228
     authcodes=D9273329
@@ -295,7 +299,7 @@ vmseries_universal = {
     dhcp-accept-server-hostname=yes
     dns-primary=8.8.8.8
     dns-secondary=4.2.2.2
-    tplname=gstan-pavm
+    tplname=ngfw_stack
     dgname=dgname=AZR
     vm-series-auto-registration-pin-id=576208cb-0921-4cad-a00c-f8e15f0d8026
     vm-series-auto-registration-pin-value=fd593deae81d467591e182ada0d2f33e
@@ -303,25 +307,25 @@ vmseries_universal = {
 }
 
 vmseries = {
-  "ngfw01" = {
-    name     = "ngfw01"
+  "pavm1" = {
+    name     = "pavm1"
     vnet_key = "transit"
     virtual_machine = {
       zone = 1
     }
     interfaces = [
       {
-        name             = "ngfw01-mgmt"
+        name             = "pavm1-mgmt"
         subnet_key       = "management"
         create_public_ip = true
       },
       {
-        name              = "ngfw01-private"
+        name              = "pavm1-private"
         subnet_key        = "private"
         load_balancer_key = "private"
       },
       {
-        name                    = "ngfw01-public"
+        name                    = "pavm1-public"
         subnet_key              = "public"
         create_public_ip        = true
         load_balancer_key       = "public"
@@ -329,25 +333,25 @@ vmseries = {
       }
     ]
   }
-  "ngfw02" = {
-    name     = "ngfw02"
+  "pavm2" = {
+    name     = "pavm2"
     vnet_key = "transit"
     virtual_machine = {
       zone = 1
     }
     interfaces = [
       {
-        name             = "ngfw02-mgmt"
+        name             = "pavm2-mgmt"
         subnet_key       = "management"
         create_public_ip = true
       },
       {
-        name              = "ngfw02-private"
+        name              = "pavm2-private"
         subnet_key        = "private"
         load_balancer_key = "private"
       },
       {
-        name                    = "ngfw02-public"
+        name                    = "pavm2-public"
         subnet_key              = "public"
         create_public_ip        = true
         load_balancer_key       = "public"
