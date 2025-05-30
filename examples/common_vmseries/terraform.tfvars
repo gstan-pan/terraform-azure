@@ -285,7 +285,7 @@ appgws = {
 
 # VM-SERIES
 vmseries_universal = {
-  version           = "11.2.302"
+  version           = "latest"
   size              = "Standard_D3_v2"
   bootstrap_options = <<-EOT
     panorama-server=172.210.8.228
