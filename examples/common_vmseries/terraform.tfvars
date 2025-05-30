@@ -284,7 +284,6 @@ appgws = {
 }
 
 # VM-SERIES
-
 vmseries_universal = {
   version           = "11.2.302"
   size              = "Standard_D3_v2"
@@ -296,7 +295,7 @@ vmseries_universal = {
     dhcp-accept-server-hostname=yes
     dns-primary=8.8.8.8
     dns-secondary=4.2.2.2
-    tplname=ngfw_stack
+    tplname=gstan-pavm
     dgname=dgname=AZR
     vm-series-auto-registration-pin-id=576208cb-0921-4cad-a00c-f8e15f0d8026
     vm-series-auto-registration-pin-value=fd593deae81d467591e182ada0d2f33e
