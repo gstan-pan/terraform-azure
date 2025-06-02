@@ -288,9 +288,7 @@ appgws = {
 
 vmseries_universal = {
   version           = "11.2.600"
-  size              = "Standard_D3_v2"
-  #bootstrap_options = #"panorama-server=172.210.8.228;authcodes=D9273329;vm-auth-key=388104403362258;type=dhcp-client;dhcp-accept-server-hostname=yes;dns-primary=8.8.8.8;dns-secondary=4.2.2.2;tplname=ngfw-stack;dgname=Azure"
-  
+  size              = "Standard_D3_v2" 
   bootstrap_options = <<-EOT
     panorama-server=172.210.8.228
     authcodes=D9273329
@@ -307,25 +305,25 @@ vmseries_universal = {
 }
 
 vmseries = {
-  "pavm1" = {
-    name     = "pavm1"
+  "ngfw1" = {
+    name     = "ngfw1"
     vnet_key = "transit"
     virtual_machine = {
       zone = 1
     }
     interfaces = [
       {
-        name             = "pavm1-mgmt"
+        name             = "ngfw1-mgmt"
         subnet_key       = "management"
         create_public_ip = true
       },
       {
-        name              = "pavm1-private"
+        name              = "ngfw1-private"
         subnet_key        = "private"
         load_balancer_key = "private"
       },
       {
-        name                    = "pavm1-public"
+        name                    = "ngfw1-public"
         subnet_key              = "public"
         create_public_ip        = true
         load_balancer_key       = "public"
@@ -333,201 +331,30 @@ vmseries = {
       }
     ]
   }
-  "pavm2" = {
-    name     = "pavm2"
+  "ngfw2" = {
+    name     = "ngfw2"
     vnet_key = "transit"
     virtual_machine = {
       zone = 1
     }
     interfaces = [
       {
-        name             = "pavm2-mgmt"
+        name             = "ngfw2-mgmt"
         subnet_key       = "management"
         create_public_ip = true
       },
       {
-        name              = "pavm2-private"
+        name              = "ngfw2-private"
         subnet_key        = "private"
         load_balancer_key = "private"
       },
       {
-        name                    = "pavm2-public"
+        name                    = "ngfw2-public"
         subnet_key              = "public"
         create_public_ip        = true
         load_balancer_key       = "public"
         application_gateway_key = "public"
       }
     ]
-  }
-}
-
-# TEST INFRASTRUCTURE
-
-test_infrastructure = {
-  "app1_testenv" = {
-    vnets = {
-      "app1" = {
-        name          = "app1-vnet"
-        address_space = ["10.100.0.0/25"]
-        hub_vnet_name = "transit" # Name prefix is added to the beginning of this string
-        network_security_groups = {
-          "app1" = {
-            name = "app1-nsg"
-            rules = {
-              from_bastion = {
-                name                       = "app1-mgmt-allow-bastion"
-                priority                   = 100
-                direction                  = "Inbound"
-                access                     = "Allow"
-                protocol                   = "Tcp"
-                source_address_prefix      = "10.100.0.64/26"
-                source_port_range          = "*"
-                destination_address_prefix = "*"
-                destination_port_range     = "*"
-              }
-              web_inbound = {
-                name                       = "app1-web-allow-inbound"
-                priority                   = 110
-                direction                  = "Inbound"
-                access                     = "Allow"
-                protocol                   = "Tcp"
-                source_address_prefixes    = ["0.0.0.0/0"] # TODO: Whitelist public IP addresses that will be used to access test infrastructure
-                source_port_range          = "*"
-                destination_address_prefix = "10.100.0.0/25"
-                destination_port_ranges    = ["80", "443"]
-              }
-            }
-          }
-        }
-        route_tables = {
-          nva = {
-            name = "app1-rt"
-            routes = {
-              "toNVA" = {
-                name                = "toNVA-udr"
-                address_prefix      = "0.0.0.0/0"
-                next_hop_type       = "VirtualAppliance"
-                next_hop_ip_address = "10.0.0.30"
-              }
-              "toAppGW" = {
-                name                = "toAppGW-udr"
-                address_prefix      = "10.0.0.48/28"
-                next_hop_type       = "VirtualAppliance"
-                next_hop_ip_address = "10.0.2.4"
-              }
-            }
-          }
-        }
-        subnets = {
-          "vms" = {
-            name                       = "vms-snet"
-            address_prefixes           = ["10.100.0.0/26"]
-            network_security_group_key = "app1"
-            route_table_key            = "nva"
-          }
-          "bastion" = {
-            name             = "AzureBastionSubnet"
-            address_prefixes = ["10.100.0.64/26"]
-          }
-        }
-      }
-    }
-    spoke_vms = {
-      "app1_vm" = {
-        name       = "app1-vm"
-        vnet_key   = "app1"
-        subnet_key = "vms"
-      }
-    }
-    bastions = {
-      "app1_bastion" = {
-        name       = "app1-bastion"
-        vnet_key   = "app1"
-        subnet_key = "bastion"
-      }
-    }
-  }
-  "app2_testenv" = {
-    vnets = {
-      "app2" = {
-        name          = "app2-vnet"
-        address_space = ["10.100.1.0/25"]
-        hub_vnet_name = "transit" # Name prefix is added to the beginning of this string
-        network_security_groups = {
-          "app2" = {
-            name = "app2-nsg"
-            rules = {
-              from_bastion = {
-                name                       = "app2-mgmt-allow-bastion"
-                priority                   = 100
-                direction                  = "Inbound"
-                access                     = "Allow"
-                protocol                   = "Tcp"
-                source_address_prefix      = "10.100.1.64/26"
-                source_port_range          = "*"
-                destination_address_prefix = "*"
-                destination_port_range     = "*"
-              }
-              web_inbound = {
-                name                       = "app2-web-allow-inbound"
-                priority                   = 110
-                direction                  = "Inbound"
-                access                     = "Allow"
-                protocol                   = "Tcp"
-                source_address_prefixes    = ["0.0.0.0/0"] # TODO: Whitelist public IP addresses that will be used to access test infrastructure
-                source_port_range          = "*"
-                destination_address_prefix = "10.100.1.0/25"
-                destination_port_ranges    = ["80", "443"]
-              }
-            }
-          }
-        }
-        route_tables = {
-          nva = {
-            name = "app2-rt"
-            routes = {
-              "toNVA" = {
-                name                = "toNVA-udr"
-                address_prefix      = "0.0.0.0/0"
-                next_hop_type       = "VirtualAppliance"
-                next_hop_ip_address = "10.0.0.30"
-              }
-              "toAppGW" = {
-                name                = "toAppGW-udr"
-                address_prefix      = "10.0.0.48/28"
-                next_hop_type       = "VirtualAppliance"
-                next_hop_ip_address = "10.0.2.4"
-              }
-            }
-          }
-        }
-        subnets = {
-          "vms" = {
-            name                       = "vms-snet"
-            address_prefixes           = ["10.100.1.0/26"]
-            network_security_group_key = "app2"
-            route_table_key            = "nva"
-          }
-          "bastion" = {
-            name             = "AzureBastionSubnet"
-            address_prefixes = ["10.100.1.64/26"]
-          }
-        }
-      }
-    }
-    spoke_vms = {
-      "app2_vm" = {
-        name       = "app2-vm"
-        vnet_key   = "app2"
-        subnet_key = "vms"
-      }
-    }
-    bastions = {
-      "app2_bastion" = {
-        name       = "app2-bastion"
-        vnet_key   = "app2"
-        subnet_key = "bastion"
-      }
-    }
   }
 }
