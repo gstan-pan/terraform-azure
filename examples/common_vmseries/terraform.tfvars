@@ -287,12 +287,12 @@ appgws = {
 # VM-SERIES
 
 vmseries_universal = {
-  version           = "11.2.600"
+  version           = "11.2.303"
   size              = "Standard_D3_v2" 
   bootstrap_options = <<-EOT
     panorama-server=172.210.8.228
     authcodes=D9273329
-    vm-auth-key=388104403362258
+    vm-auth-key=072012214625500
     type=dhcp-client
     dhcp-accept-server-hostname=yes
     dns-primary=8.8.8.8
