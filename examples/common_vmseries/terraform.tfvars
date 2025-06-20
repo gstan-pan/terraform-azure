@@ -292,15 +292,15 @@ vmseries_universal = {
   bootstrap_options = <<-EOT
     panorama-server=172.210.8.228
     authcodes=D9273329
-    vm-auth-key=072012214625500
+    vm-auth-key=07201221462
     type=dhcp-client
     dhcp-accept-server-hostname=yes
     dns-primary=8.8.8.8
     dns-secondary=4.2.2.2
     tplname=ngfw_stack
     dgname=dgname=AZR
-    vm-series-auto-registration-pin-id=576208cb-0921-4cad-a00c-f8e15f0d8026
-    vm-series-auto-registration-pin-value=fd593deae81d467591e182ada0d2f33e
+    vm-series-auto-registration-pin-id=576208cb-0921-4cad-a00c-f8e15f0d
+    vm-series-auto-registration-pin-value=fd593deae81d467591e182ada0d2
     EOT
 }
 
